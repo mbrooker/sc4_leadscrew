@@ -1,5 +1,10 @@
 // This calls itself gcode, but really is just a very basic gcode-like line-by-line encoding.
-
+// Supported commands:
+// Fn (e.g. F0.25): Set feed rate to `n` millimeters
+// M100: Set feed type to half-nut
+// M101: Set feed type to power feed
+// G98: Set feed mode to millimeters per minute
+// G99: Set feed mode to millimeters per revolution
 #define GCODE_BUFFER_SIZE 128
 
 char gcode_buffer[GCODE_BUFFER_SIZE] = { 0 };
@@ -36,12 +41,15 @@ void handle_m(config_t *conf) {
 void interpret_gcode(config_t *conf) {
   switch (gcode_buffer[0]) {
     case 'G':
+    case 'g':
       handle_g(conf);
       break;
     case 'F':
+    case 'f':
       handle_f(conf);
       break;
     case 'M':
+    case 'm':
       handle_m(conf);
       break;
     default:

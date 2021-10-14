@@ -1,8 +1,8 @@
 // Ticks per revolution (from the encoder data sheet)
 #define TICKS_PER_REV (4 * 360.0)
 
-// Simple windowed-sinc FIR filter, aiming for a cutoff frequency of 0.2pi
-double filter_coeffs[RPM_FILTER_BUCKETS] = { 0.094, 0.14, 0.173, 0.185, 0.173, 0.14, 0.094 };
+// Simple windowed-sinc FIR filter, aiming for a cutoff frequency of 0.2pi with minimal group delay
+double filter_coeffs[RPM_FILTER_BUCKETS] = { 0.32, 0.29, 0.24, 0.15 };
 
 void rpm_filter_fir(encoder_state *state, long new_ticks) {
   // Add the latest tick count to the bucket
@@ -16,6 +16,7 @@ void rpm_filter_fir(encoder_state *state, long new_ticks) {
   double ticks_per_minute = ticks * 60000 / LOOP_EVERY_MS;
   state->rpm = ticks_per_minute / TICKS_PER_REV;
 
+  // Move the bucket pointer over. We do this backwards to keep the loop above simple
   state->bucket_pointer -= 1;
   if (state->bucket_pointer < 0) {
     state->bucket_pointer = RPM_FILTER_BUCKETS - 1;

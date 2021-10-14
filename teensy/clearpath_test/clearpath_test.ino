@@ -1,10 +1,10 @@
 #include <Encoder.h>
 
 // Run the inner loop every this number of millis.
-#define LOOP_EVERY_MS 100
-#define PRINT_EVERY_LOOP 10
+#define LOOP_EVERY_MS 10
+#define PRINT_EVERY_LOOP 100
 #define ANALOG_WRITE_RES 10
-#define RPM_FILTER_BUCKETS 7
+#define RPM_FILTER_BUCKETS 4
 
 // Configured max motor RPM. This is set in the clearpath motor's configuration, done ahead of time via USB
 #define CP_MOTOR_MAX_RPM 1000
@@ -61,7 +61,7 @@ encoder_state enc_state;
 Encoder enc(pin_encoder_a, pin_encoder_b);
 
 config_t conf {
-  0.05,
+  0.25,
   per_rev,
   power_feed,
 };
