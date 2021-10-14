@@ -2,6 +2,7 @@
 
 // Run the inner loop every this number of millis.
 #define LOOP_EVERY_MS 100
+#define PRINT_EVERY_LOOP 10
 #define ANALOG_WRITE_RES 10
 #define RPM_FILTER_BUCKETS 7
 
@@ -76,7 +77,7 @@ void setup() {
 }
 
 void serialEvent() {
-  read_gcode_from_serial();
+  read_gcode_from_serial(&conf);
 }
 
 double calculate_leadscrew_rpm(double spindle_rpm, config_t *conf) {
@@ -85,7 +86,7 @@ double calculate_leadscrew_rpm(double spindle_rpm, config_t *conf) {
     return spindle_rpm * conf->feed / LEADSCREW_PITCH;
   } else if (conf->feed_type == power_feed) {
     // Power cross-feed mode
-    return spindle_rpm * conf->feed * POWERFEED_RATIO / LEADSCREW_PITCH;
+    return spindle_rpm * conf->feed / (LEADSCREW_PITCH * POWERFEED_RATIO);
   } else {
     return 0;
   }
@@ -99,22 +100,28 @@ motor_direction rpm_to_leadscrew_dir(double spindle_rpm) {
   }
 }
 
+int loop_ctr = 0;
+
 void loop() {
   long now = millis();
   encoder_read_loop(now, &enc_state);
   double leadscrew_rpm = calculate_leadscrew_rpm(enc_state.rpm, &conf);
   motor_direction leadscrew_dir = rpm_to_leadscrew_dir(enc_state.rpm);
   move_clearpath(leadscrew_rpm, leadscrew_dir);
+  if ((loop_ctr++ % PRINT_EVERY_LOOP) == 0) {
+    Serial.print(enc_state.rpm);
+    Serial.print(" ");
+    Serial.print(leadscrew_rpm);
+    Serial.print(" ");
+    Serial.print(leadscrew_dir);
+    Serial.print(" ");
+    Serial.print(conf.feed);
+    Serial.print(" ");
+    Serial.println(conf.feed_type);
+  }
   long end = millis();
 
   // Delay for the amount of time it takes to run this inner loop at a constant rate
   long delay_for = constrain(LOOP_EVERY_MS + now - end, 0, LOOP_EVERY_MS);
-  Serial.print(delay_for);
-  Serial.print(" ");
-  Serial.print(enc_state.rpm);
-  Serial.print(" ");
-  Serial.print(leadscrew_rpm);
-  Serial.print(" ");
-  Serial.println(leadscrew_dir);
   delay(delay_for);
 }
