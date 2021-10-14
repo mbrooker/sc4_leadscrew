@@ -69,10 +69,9 @@ void setup() {
   Serial.begin(9600);
   pinMode(pin_cp_enable, OUTPUT);
   pinMode(pin_cp_dir, OUTPUT);
-  pinMode(pin_cp_speed, OUTPUT);
-  analogWriteResolution(10);
+  analogWriteResolution(ANALOG_WRITE_RES);
   // Magic number from https://www.pjrc.com/teensy/td_pulse.html for 96MHz CPU speed
-  analogWriteFrequency(pin_cp_speed, 46875);
+  analogWriteFrequency(pin_cp_speed, 35156.25);
   digitalWrite(pin_cp_enable, HIGH);
 }
 
@@ -86,7 +85,7 @@ double calculate_leadscrew_rpm(double spindle_rpm, config_t *conf) {
     return spindle_rpm * conf->feed / LEADSCREW_PITCH;
   } else if (conf->feed_type == power_feed) {
     // Power cross-feed mode
-    return spindle_rpm * conf->feed / (LEADSCREW_PITCH * POWERFEED_RATIO);
+    return spindle_rpm * conf->feed * POWERFEED_RATIO / LEADSCREW_PITCH;
   } else {
     return 0;
   }

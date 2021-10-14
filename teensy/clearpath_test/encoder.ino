@@ -1,4 +1,4 @@
-
+// Ticks per revolution (from the encoder data sheet)
 #define TICKS_PER_REV (4 * 360.0)
 
 // Simple windowed-sinc FIR filter, aiming for a cutoff frequency of 0.2pi
