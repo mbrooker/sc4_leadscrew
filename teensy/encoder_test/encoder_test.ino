@@ -1,5 +1,5 @@
 #include <Encoder.h>
-#define RPM_FILTER_BUCKETS 5
+
 #define RPM_FILTER_MS 1000
 #define RPM_FILTER_A0 0.9
 // Filter gain for the bucket filter, see gain.py for how its calculated from RPM_FILTER_BUCKETS and RPM_FILTER_A0
@@ -22,31 +22,7 @@ void setup() {
 
 }
 
-void update_rpm_filter() {
-  buckets[bucket_pointer] = rpm_filter_accum;
-  rpm_filter_accum = 0;
-  double ticks = 0;
-  double gain = 1.0;
-  for (int i = 0; i < RPM_FILTER_BUCKETS; i++) {
-   // Serial.print(buckets[(bucket_pointer + i) % RPM_FILTER_BUCKETS]);
-  //  Serial.print(" ");
-    ticks += buckets[(bucket_pointer + i) % RPM_FILTER_BUCKETS] * gain;
-    gain *= RPM_FILTER_A0;
-  }
- // Serial.println("");
-  // Move the bucket pointer over by one
-  bucket_pointer -= 1;
-  if (bucket_pointer < 0) {
-    bucket_pointer = RPM_FILTER_BUCKETS - 1;
-  }
-  // Now convert from ticks-per-period to RPM
-  ticks /= RPM_FILTER_GAIN;
-  double ticks_per_minute = ticks * 60000 / RPM_FILTER_MS;
-  rpm = ticks_per_minute / TICKS_PER_REV;
 
-  Serial.println(rpm);
- 
-}
 
 void loop() {
   delay(100);
