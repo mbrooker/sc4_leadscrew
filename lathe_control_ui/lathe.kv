@@ -1,22 +1,25 @@
 #:kivy 1.0.9
 
 <Lathe>:
-    size_hint: .5, .5
-    pos_hint: {'center_x': .5, 'center_y': .5}
-    do_default_tab: False
-
-    TabbedPanelItem:
-        text: 'Turning'
-        BoxLayout:
+    orientation: 'vertical'
+    TabbedPanel:
+        do_default_tab: False
+        TabbedPanelItem:
+            text: 'Turning'
+            BoxLayout:
+                Label:
+                    text: 'Turning content'
+                Button:
+                    text: 'Button'
+        TabbedPanelItem:
+            text: 'Threading'
             Label:
-                text: 'Turning content'
-            Button:
-                text: 'Button'
-    TabbedPanelItem:
-        text: 'Threading'
-        Label:
-            test: 'Threading stuff'
-    TabbedPanelItem:
-        text: 'Config'
-        Label:
-            test: 'Config stuff'
+                text: 'Threading stuff'
+        TabbedPanelItem:
+            text: 'Config'
+            Label:
+                text: 'Config stuff'
+    Label:
+        size_hint: 1.0, 0.1
+        id: status_label
+        text: 'Status goes here'

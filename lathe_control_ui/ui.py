@@ -6,28 +6,46 @@
 
 from kivy.app import App
 from kivy.uix.tabbedpanel import TabbedPanel
+from kivy.clock import Clock, _default_time as time
+from kivy.uix.boxlayout import BoxLayout
 from kivy.lang import Builder
 from kivy.core.window import Window
 import sys
 import serial
 
-ser = serial.Serial('/dev/ttyACM0',baudrate=115200)
+ser = serial.Serial('/dev/ttyACM0',baudrate=115200, timeout=0)
 ser.flushInput()
 ser.flushOutput()
 
 Window.size = (600, 400)
 
-class Lathe(TabbedPanel):
-    def on_touch_move(self, touch):
-        print(touch)
-        return True
 
-    def on_touch_down(self, touch):
-        print(touch)
-        return True
+
+def transform_status_line(line):
+    s = line.split(" ")
+    if len(s) != 5:
+        return "Unable to parse status line"
+    else:
+        input_rpm = float(s[0])
+        output_rpm = float(s[1])
+        leadscrew_dir = 'CW' if s[2] == "0" else "CCW"
+        feed = float(s[3])
+        feed_type = 'Half-Nut' if s[4] == "0" else "Power Feed"
+        return "Lathe RPM: %.1f Leadscrew RPM: %.1f %s Feed: %.3f %s"%(input_rpm, output_rpm, leadscrew_dir, feed, feed_type)
+
+class Lathe(BoxLayout):
+    pass
 
 class LatheApp(App):
     def build(self):
-        return Lathe()
+        Clock.schedule_interval(self.consume, 0.5)
+        self.widgets = Lathe()
+        return self.widgets
+
+    def consume(self, tm):
+        line = ser.readline().decode("utf-8")
+        if line != "":
+            print(line)
+            self.widgets.ids.status_label.text = transform_status_line(line)
 
 LatheApp().run()
