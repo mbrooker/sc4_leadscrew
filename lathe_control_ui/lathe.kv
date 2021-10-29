@@ -2,21 +2,27 @@
 
 <Lathe>:
     orientation: 'vertical'
-    TabbedPanel:
+    PageLayout:
+        size_hint: 1.0, 0.85
         do_default_tab: False
-        TabbedPanelItem:
-            text: 'Turning'
-            BoxLayout:
-                Label:
-                    text: 'Turning content'
-                Button:
-                    text: 'Button'
-        TabbedPanelItem:
-            text: 'Threading'
+        BoxLayout:
+            padding: 10
+            Label:
+                text: 'Rough Turning'
+            Button:
+                text: 'Aluminium (0.3 mm/rev)'
+                id: rough_al
+            Button:
+                text: 'Steel (0.2 mm/rev)'
+                id: rough_fe
+            Spinner:
+                text: '0.3'
+                values: '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1.0'
+                id: rough_spinner
+        GridLayout:
             Label:
                 text: 'Threading stuff'
-        TabbedPanelItem:
-            text: 'Config'
+        GridLayout:
             Label:
                 text: 'Config stuff'
     Label:
