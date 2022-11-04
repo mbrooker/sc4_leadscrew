@@ -100,6 +100,7 @@ void loop() {
     total_leadscrew_ticks += leadscrew_ticks;
   }
 
+  // Print out information to the serial console that the UI will consume
   if ((++loop_ctr % PRINT_EVERY_LOOP) == 0) {
     Serial.print(60 * total_leadscrew_ticks / STEPPER_TICKS_PER_REV);
     Serial.print(" ");
@@ -109,7 +110,7 @@ void loop() {
     Serial.print(" ");
     Serial.println(conf.feed_type);
     loop_ctr = 0;
-        total_encoder_ticks = 0;
+    total_encoder_ticks = 0;
     total_leadscrew_ticks = 0;
   }
   
