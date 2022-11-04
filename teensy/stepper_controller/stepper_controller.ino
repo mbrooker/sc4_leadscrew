@@ -54,7 +54,8 @@ Encoder enc(pin_encoder_a, pin_encoder_b);
 IntervalTimer motor_timer;
 
 config_t conf {
-  0.25,
+  // Default feed per revolution (in mm)
+  0.10,
   per_rev,
   power_feed,
 };
