@@ -76,34 +76,50 @@ notebook.add(frame_turning, text="Turning")
 notebook.add(frame_threading, text="Threading")
 
 # Set up turning tab
-button_turning_al = ttk.Button(frame_turning, text="Aluminium Rough", command=lambda: control.set_power_feed(0.5))
+button_turning_al = ttk.Button(frame_turning, text="Aluminium Rough .2", command=lambda: control.set_power_feed(0.20))
 button_turning_al.grid(column=0, row=0)
 
-button_turning_al_finish = ttk.Button(frame_turning, text="Aluminium Finish", command=lambda: control.set_power_feed(0.25))
+button_turning_al_finish = ttk.Button(frame_turning, text="Aluminium Finish .07", command=lambda: control.set_power_feed(0.07))
 button_turning_al_finish.grid(column=1, row=0)
 
-button_turning_fe = ttk.Button(frame_turning, text="Steel Rough", command=lambda: control.set_power_feed(0.3))
+button_turning_fe = ttk.Button(frame_turning, text="Steel Rough .1", command=lambda: control.set_power_feed(0.1))
 button_turning_fe.grid(column=2, row=0)
-button_turning_fe_finish = ttk.Button(frame_turning, text="Steel Finish", command=lambda: control.set_power_feed(0.25))
+button_turning_fe_finish = ttk.Button(frame_turning, text="Steel Finish .05", command=lambda: control.set_power_feed(0.05))
 button_turning_fe_finish.grid(column=3, row=0)
 
 label_turning_custom = ttk.Label(frame_turning, text="Custom feed rate (mm/rev)")
 label_turning_custom.grid(column=0, row=1)
 turning_custom = ttk.Entry(frame_turning)
-turning_custom.insert(tk.END, "0.5")
+turning_custom.insert(tk.END, "0.1")
 turning_custom.grid(column=1, row=1)
 
-def update_turning_custom(amount):
+# Handle the custom feed rate up and down buttons
+def update_turning_custom(up):
     feed=float(turning_custom.get())
-    if feed >= -amount:
-        feed += amount
+    amount = 0.0
+    # Change the amount that the buttons increase or decrease the feed non-linearly based on the current feed
+    if feed >= 0.5:
+        amount = 0.1
+    elif feed >= 0.2:
+        amount = 0.05
+    elif feed >= 0.1:
+        amount = 0.02
+    elif feed >= 0.02:
+        amount = 0.01
+    else:
+        amount = 0.002
+    if feed > amount:
+        if up:
+            feed += amount
+        else:
+            feed -= amount
     turning_custom.delete(0, tk.END)
     turning_custom.insert(tk.END, "%.3f"%(feed))
     control.set_power_feed(feed)
 
-turning_custom_up = ttk.Button(frame_turning, text="+", command=lambda: update_turning_custom(0.05))
+turning_custom_up = ttk.Button(frame_turning, text="+", command=lambda: update_turning_custom(True))
 turning_custom_up.grid(column=2, row=1)
-turning_custom_down = ttk.Button(frame_turning, text="-", command=lambda: update_turning_custom(-0.05))
+turning_custom_down = ttk.Button(frame_turning, text="-", command=lambda: update_turning_custom(False))
 turning_custom_down.grid(column=3, row=1)
 
 # Set up the threading tab
