@@ -1,3 +1,5 @@
+# Lathe UI in TK. Ugly as sin, but gets the job done.
+# The Kivy stuff looks nicer, but never got it to work right.
 import tkinter as tk
 from tkinter import ttk
 import sys
@@ -34,15 +36,20 @@ class StatusBar(object):
         self.bar.after(1000, self.update_bar)
 
 class LatheControl(object):
+
+    def write(self, cmd):
+        print("Sending GCODE '", str(cmd), ",")
+        ser.write(cmd)
+
     def set_feed(self, feed):
         if feed == 'power' or feed == 'nut':
             if feed == 'power':
-                ser.write(b"M101\n")
+                self.write(b"M101\n")
             elif feed == 'nut':
-                ser.write(b"M100\n")
+                self.write(b"M100\n")
 
     def set_feed_rate(self, feed_rate):
-        ser.write(b"F%f\n"%(feed_rate))
+        self.write(b"F%f\n"%(feed_rate))
     
     def set_power_feed(self, feed_rate):
         self.set_feed('power')
